@@ -301,9 +301,9 @@ const RegisterView = () => {
 
         <button
           onClick={() => setView('landing')}
-          className="mt-4 w-full text-[10px] font-black uppercase tracking-widest opacity-20 hover:opacity-60 transition-all"
+          className="mt-6 w-full text-[10px] font-black uppercase tracking-widest opacity-30 hover:opacity-100 hover:text-[#D49E4A] transition-all flex items-center justify-center gap-2"
         >
-          ← Back to home
+          <ArrowLeft size={12} /> ወደ ዋናው ገጽ ይመለሱ (Back to Home)
         </button>
       </div>
     </div>

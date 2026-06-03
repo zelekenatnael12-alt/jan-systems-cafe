@@ -1,8 +1,8 @@
 // apps/client/src/views/AdminView.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { formatETB } from '../store/useStore';
-import { Edit2, Trash2, Search, Plus, Save, X, Coffee, ShieldCheck, CreditCard, Receipt, UserPlus, Image as ImageIcon } from 'lucide-react';
+import { useStore, formatETB } from '../store/useStore';
+import { Edit2, Trash2, Search, Plus, Save, X, Coffee, ShieldCheck, CreditCard, Receipt, UserPlus, Image as ImageIcon, ArrowLeft } from 'lucide-react';
 import ImageUploader from '../components/ImageUploader';
 import TableGrid from '../components/TableGrid';
 import PaymentModal from '../components/PaymentModal';
@@ -12,6 +12,7 @@ import ZReport from '../components/ZReport';
 import AlertsWidget from '../components/AlertsWidget';
 
 const AdminView = () => {
+  const { setView } = useStore();
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('jan_token'));
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -231,7 +232,14 @@ const AdminView = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="max-w-md mx-auto bg-white p-10 rounded-2xl shadow-2xl border-0.5 border-espresso/5">
+      <div className="max-w-md mx-auto bg-white p-10 rounded-2xl shadow-2xl border-0.5 border-espresso/5 relative">
+        <button 
+          onClick={() => setView('landing')}
+          className="absolute top-6 right-6 p-2 rounded-full hover:bg-black/5 text-[#120B05] transition-all duration-300 flex items-center justify-center"
+          title="Back to Landing Page"
+        >
+          <ArrowLeft size={20} />
+        </button>
         <h2 className="text-3xl font-serif font-bold mb-2 tracking-tight text-espresso">ሠራተኛ መግቢያ</h2>
         <p className="text-gray-400 text-xs mb-8 uppercase tracking-widest font-bold">Secure Staff Portal</p>
         <form onSubmit={handleLogin} className="space-y-6">
@@ -257,6 +265,14 @@ const AdminView = () => {
             ዳሽቦርድ ይግቡ (Login)
           </button>
         </form>
+        <div className="mt-8 pt-6 border-t border-espresso/10 text-center">
+          <button 
+            onClick={() => setView('landing')}
+            className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-amber transition-all flex items-center justify-center gap-2 mx-auto"
+          >
+            <ArrowLeft size={12} /> ወደ ዋናው ገጽ ይመለሱ (Back to Home)
+          </button>
+        </div>
       </div>
     );
   }

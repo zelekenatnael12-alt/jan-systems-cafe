@@ -2,13 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useStore, formatETB, socket } from '../store/useStore';
-import { ShoppingCart, ClipboardList, CheckCircle2, Clock, MapPin, User, ChevronRight, LayoutGrid, X } from 'lucide-react';
+import { ShoppingCart, ClipboardList, CheckCircle2, Clock, MapPin, User, ChevronRight, LayoutGrid, X, ArrowLeft } from 'lucide-react';
 import TableGrid from '../components/TableGrid';
 import PaymentModal from '../components/PaymentModal';
 
 
 const WaiterView = () => {
-  const { menu, setMenu, addItem, cart, clearCart, config } = useStore();
+  const { menu, setMenu, addItem, cart, clearCart, config, setView } = useStore();
   const [activeTab, setActiveTab] = useState('new'); // 'new' or 'manage'
   const [orders, setOrders] = useState([]);
   const [tables, setTables] = useState([]);
@@ -118,7 +118,19 @@ const WaiterView = () => {
   const categories = ['All', ...new Set(menu.map(item => item.category))];
   const filteredMenu = category === 'All' ? menu : menu.filter(item => item.category === category);
 
-  if (!token) return <div className="text-center py-40 glass m-10 rounded-[40px] font-black text-black/10 uppercase tracking-widest text-2xl">እባክዎን መጀመሪያ ይግቡ • LOGIN REQUIRED</div>;
+  if (!token) return (
+    <div className="text-center py-40 glass m-10 rounded-[40px] font-black text-black/40 uppercase tracking-widest text-2xl relative">
+      እባክዎን መጀመሪያ ይግቡ • LOGIN REQUIRED
+      <div className="mt-8">
+        <button 
+          onClick={() => setView('landing')}
+          className="px-6 py-3 bg-[#120B05] text-white hover:bg-[#D49E4A] transition-all rounded-2xl text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2 shadow-xl"
+        >
+          <ArrowLeft size={12} /> ወደ ዋናው ገጽ ይመለሱ (Back to Home)
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-10 pb-32 animate-fade-in">

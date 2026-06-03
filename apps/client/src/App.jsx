@@ -178,7 +178,12 @@ const App = () => {
       {/* ── FLOATING NAVIGATION (Luxury Glass) ── */}
       <div className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-lg z-50">
         <header className="glass-dark rounded-3xl p-2 flex items-center justify-between shadow-2xl">
-          <div className="px-3 py-2 rounded-2xl" style={{ backgroundColor: config?.primaryColor || '#D49E4A' }}>
+          <div 
+            onClick={() => setView('landing')}
+            className="px-3 py-2 rounded-2xl cursor-pointer hover:opacity-90 transition-opacity" 
+            style={{ backgroundColor: config?.primaryColor || '#D49E4A' }}
+            title="Go to Home"
+          >
             <img src="/logo.png" alt="Jan Systems" className="h-5 w-auto brightness-0 invert" />
           </div>
 

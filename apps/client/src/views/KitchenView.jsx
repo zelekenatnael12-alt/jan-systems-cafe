@@ -9,7 +9,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { useStore, socket } from '../store/useStore';
-import { Clock, ChefHat, CheckCircle2, BellRing, Flame, Wifi, WifiOff } from 'lucide-react';
+import { Clock, ChefHat, CheckCircle2, BellRing, Flame, Wifi, WifiOff, ArrowLeft } from 'lucide-react';
 
 // ── Urgency thresholds (minutes) ─────────────────────────────────────────────
 const URGENCY = [
@@ -67,7 +67,7 @@ const COLUMNS = [
 ];
 
 const KitchenView = () => {
-  const { config } = useStore();
+  const { config, setView } = useStore();
   const [orders, setOrders]           = useState([]);
   const [now, setNow]                 = useState(Date.now());
   const [paymentModal, setPaymentModal] = useState(null); // { orderId }
@@ -150,8 +150,16 @@ const KitchenView = () => {
 
   if (!token) {
     return (
-      <div className="text-center py-40 glass m-10 rounded-[40px] font-black text-black/10 uppercase tracking-widest text-2xl">
+      <div className="text-center py-40 glass m-10 rounded-[40px] font-black text-black/40 uppercase tracking-widest text-2xl relative">
         እባክዎን መጀመሪያ ይግቡ • LOGIN REQUIRED
+        <div className="mt-8">
+          <button 
+            onClick={() => setView('landing')}
+            className="px-6 py-3 bg-[#120B05] text-white hover:bg-[#D49E4A] transition-all rounded-2xl text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2 shadow-xl"
+          >
+            <ArrowLeft size={12} /> ወደ ዋናው ገጽ ይመለሱ (Back to Home)
+          </button>
+        </div>
       </div>
     );
   }

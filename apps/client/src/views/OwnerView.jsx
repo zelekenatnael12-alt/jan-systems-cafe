@@ -1,14 +1,15 @@
 // apps/client/src/views/OwnerView.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { formatETB } from '../store/useStore';
-import { Clock, X, ShieldCheck, Save } from 'lucide-react';
+import { useStore, formatETB } from '../store/useStore';
+import { Clock, X, ShieldCheck, Save, ArrowLeft } from 'lucide-react';
 import ShiftManager from '../components/ShiftManager';
 import ShiftCloseModal from '../components/ShiftCloseModal';
 import ZReport from '../components/ZReport';
 import AlertsWidget from '../components/AlertsWidget';
 
 const OwnerView = () => {
+  const { setView } = useStore();
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('jan_token'));
   const [briefing, setBriefing] = useState(null);
   const [revenueData, setRevenueData] = useState(null);
@@ -109,7 +110,14 @@ const OwnerView = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="max-w-md mx-auto glass p-10 rounded-3xl shadow-2xl border-0.5 border-white/20 animate-fade-in-up">
+      <div className="max-w-md mx-auto glass p-10 rounded-3xl shadow-2xl border-0.5 border-white/20 animate-fade-in-up relative">
+        <button 
+          onClick={() => setView('landing')}
+          className="absolute top-6 right-6 p-2 rounded-full hover:bg-black/5 text-[#120B05] transition-all duration-300 flex items-center justify-center"
+          title="Back to Landing Page"
+        >
+          <ArrowLeft size={20} />
+        </button>
         <h2 className="text-3xl font-serif font-black mb-2 tracking-tightest text-[#120B05]">ባለቤት መግቢያ</h2>
         <p className="text-[10px] uppercase tracking-widest text-[#D49E4A] font-bold mb-8">Secure Owner Portal</p>
         <form onSubmit={async (e) => {
@@ -128,6 +136,14 @@ const OwnerView = () => {
           <input name="password" type="password" placeholder="Password" className="w-full bg-white/50 border-0.5 border-black/5 rounded-2xl px-5 py-4 focus:outline-none focus:border-[#D49E4A] transition-all" />
           <button className="w-full py-5 bg-[#120B05] text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-[#D49E4A] transition-all">Login</button>
         </form>
+        <div className="mt-8 pt-6 border-t border-black/5 text-center">
+          <button 
+            onClick={() => setView('landing')}
+            className="text-[10px] font-black uppercase tracking-widest text-black/40 hover:text-[#D49E4A] transition-all flex items-center justify-center gap-2 mx-auto"
+          >
+            <ArrowLeft size={12} /> ወደ ዋናው ገጽ ይመለሱ (Back to Home)
+          </button>
+        </div>
       </div>
     );
   }
