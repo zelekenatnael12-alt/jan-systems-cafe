@@ -136,6 +136,33 @@ const OwnerView = () => {
           <input name="password" type="password" placeholder="Password" className="w-full bg-white/50 border-0.5 border-black/5 rounded-2xl px-5 py-4 focus:outline-none focus:border-[#D49E4A] transition-all" />
           <button className="w-full py-5 bg-[#120B05] text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-[#D49E4A] transition-all">Login</button>
         </form>
+
+        {/* Demo Credentials Helper */}
+        <div className="mt-8 p-6 rounded-2xl bg-[#D49E4A]/10 border border-[#D49E4A]/20 text-center">
+          <p className="text-[10px] font-black uppercase tracking-widest text-[#D49E4A] mb-2">Demo Access (የሙከራ መግቢያ)</p>
+          <p className="text-[11px] text-[#120B05] opacity-70">Email: <strong>owner@jan.com</strong></p>
+          <p className="text-[11px] text-[#120B05] opacity-70 mb-4">Password: <strong>password123</strong></p>
+          <button 
+            type="button"
+            onClick={async () => {
+              try {
+                const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, { 
+                  email: 'owner@jan.com', 
+                  password: 'password123' 
+                });
+                localStorage.setItem('jan_token', res.data.token);
+                localStorage.setItem('jan_refresh_token', res.data.refreshToken);
+                localStorage.setItem('jan_user', JSON.stringify(res.data.user));
+                localStorage.setItem('jan_venue_slug', 'demo-cafe');
+                setIsLoggedIn(true);
+              } catch (err) { alert('Demo Login failed'); }
+            }}
+            className="w-full py-4 bg-[#D49E4A] text-white hover:bg-[#120B05] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md"
+          >
+            Quick Login (በቀጥታ ግባ)
+          </button>
+        </div>
+
         <div className="mt-8 pt-6 border-t border-black/5 text-center">
           <button 
             onClick={() => setView('landing')}

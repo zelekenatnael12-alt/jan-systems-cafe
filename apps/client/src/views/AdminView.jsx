@@ -265,6 +265,33 @@ const AdminView = () => {
             ዳሽቦርድ ይግቡ (Login)
           </button>
         </form>
+
+        {/* Demo Credentials Helper */}
+        <div className="mt-8 p-6 rounded-2xl bg-amber/10 border border-amber/20 text-center">
+          <p className="text-[10px] font-black uppercase tracking-widest text-amber mb-2">Demo Access (የሙከራ መግቢያ)</p>
+          <p className="text-[11px] text-espresso opacity-70">Email: <strong>admin@jan.com</strong></p>
+          <p className="text-[11px] text-espresso opacity-70 mb-4">Password: <strong>password123</strong></p>
+          <button 
+            type="button"
+            onClick={async () => {
+              try {
+                const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, { 
+                  email: 'admin@jan.com', 
+                  password: 'password123' 
+                });
+                localStorage.setItem('jan_token', res.data.token);
+                localStorage.setItem('jan_refresh_token', res.data.refreshToken);
+                localStorage.setItem('jan_user', JSON.stringify(res.data.user));
+                localStorage.setItem('jan_venue_slug', 'demo-cafe');
+                setIsLoggedIn(true);
+              } catch (err) { alert('Demo Login failed'); }
+            }}
+            className="w-full py-4 bg-amber text-espresso hover:bg-espresso hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md"
+          >
+            Quick Login (በቀጥታ ግባ)
+          </button>
+        </div>
+
         <div className="mt-8 pt-6 border-t border-espresso/10 text-center">
           <button 
             onClick={() => setView('landing')}
