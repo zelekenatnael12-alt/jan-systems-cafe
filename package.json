@@ -10,6 +10,7 @@
     "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
     "build": "npm run build --workspaces --if-present",
     "start": "npm run start --workspaces --if-present",
+    "postinstall": "npx prisma generate --schema=apps/server/prisma/schema.prisma",
     "server:dev": "npm run dev --workspace=@jan-systems/server",
     "client:dev": "npm run dev --workspace=@jan-systems/client"
   },
