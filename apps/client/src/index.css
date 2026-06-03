@@ -7,7 +7,7 @@
   --deep-espresso: #120B05;
   --liquid-gold: #D49E4A;
   --glass-white: rgba(255, 255, 255, 0.7);
-  --glass-dark: rgba(18, 11, 5, 0.8);
+  --glass-dark: rgba(18, 11, 5, 0.85);
 }
 
 body {
@@ -27,9 +27,9 @@ body {
 
 .glass-dark {
   background: var(--glass-dark);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .text-gold {
@@ -46,7 +46,6 @@ body {
   50% { transform: translateY(-10px); }
   100% { transform: translateY(0px); }
 }
-
 .animate-floating {
   animation: floating 6s ease-in-out infinite;
 }
@@ -56,49 +55,83 @@ body {
   50% { opacity: 0.6; transform: scale(1.05); }
   100% { opacity: 0.3; transform: scale(1); }
 }
-
 .animate-steam {
   animation: steam 3s ease-in-out infinite;
 }
 
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in 0.5s ease forwards;
 }
 
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .animate-fade-in-up {
   animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fade-in-right {
+  from { opacity: 0; transform: translateX(-16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-fade-in-right {
+  animation: fade-in-right 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes bounce-subtle {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
 }
-
 .animate-bounce-subtle {
   animation: bounce-subtle 2s ease-in-out infinite;
 }
 
 @keyframes slide-up {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
-
 .animate-slide-up {
   animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 158, 74, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(212, 158, 74, 0); }
+}
+.animate-pulse-gold {
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
 /* ── SCROLLBAR ── */
-::-webkit-scrollbar {
-  width: 6px;
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(18, 11, 5, 0.2); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(18, 11, 5, 0.4); }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── WHATSAPP BUTTON ── */
+.btn-whatsapp {
+  background: #25D366;
+  color: white;
+  transition: all 0.2s ease;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
+.btn-whatsapp:hover {
+  background: #128C7E;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(37, 211, 102, 0.35);
 }
-::-webkit-scrollbar-thumb {
-  background: var(--deep-espresso);
-  border-radius: 10px;
-}
-  
-.no-scrollbar::-webkit-scrollbar { display: none; }  
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } 

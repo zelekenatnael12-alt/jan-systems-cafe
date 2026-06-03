@@ -1,7 +1,7 @@
 // apps/client/src/views/SuperadminPanel.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Building2, Users, TrendingUp, Plus, ShieldOff, ShieldCheck, Settings, ChevronRight, X, Wifi, Coffee } from 'lucide-react';
+import { Building2, Users, TrendingUp, Plus, ShieldOff, ShieldCheck, Settings, ChevronRight, X, Wifi, Coffee, MessageCircle } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL;
 const ETB = n => `ETB ${Number(n || 0).toLocaleString('en-ET', { minimumFractionDigits: 2 })}`;
@@ -28,6 +28,34 @@ export default function SuperadminPanel() {
 
   const token   = localStorage.getItem('jan_token');
   const headers = { Authorization: `Bearer ${token}` };
+
+  const exportToCSV = () => {
+    const headersList = ['ID', 'Name', 'Slug', 'City', 'Phone', 'Plan', 'Subscription Status', 'Revenue', 'Orders', 'Users', 'Expires At'];
+    const rows = venues.map(v => [
+      v.id,
+      v.name,
+      v.slug,
+      v.city,
+      v.phone || '',
+      v.plan,
+      v.subscription,
+      v.totalRevenue,
+      v.orderCount,
+      v._count?.users || 0,
+      v.subscriptionExpiresAt ? new Date(v.subscriptionExpiresAt).toLocaleDateString() : '',
+    ]);
+
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + [headersList.join(','), ...rows.map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(','))].join('\n');
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `jan_systems_venues_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const load = async () => {
     try {
@@ -72,31 +100,40 @@ export default function SuperadminPanel() {
     <div className="space-y-10 animate-fade-in pb-32">
 
       {/* ── Header ── */}
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-start flex-wrap gap-4">
         <div>
           <h2 className="text-4xl font-serif font-black tracking-tightest text-[#120B05]">Jan Systems</h2>
           <p className="text-[11px] uppercase tracking-widest font-black text-[#D49E4A] mt-1">Superadmin Control Center</p>
         </div>
-        <button
-          onClick={() => { setForm(EMPTY_VENUE); setShowNew(true); setResult(null); }}
-          className="flex items-center gap-2 px-6 py-3 bg-[#120B05] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-[#D49E4A] transition-all shadow-xl"
-        >
-          <Plus size={14} /> Onboard Cafe
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={exportToCSV}
+            className="flex items-center gap-2 px-6 py-3 bg-white border border-black/10 text-black/70 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:border-black transition-all shadow-sm"
+          >
+            Export CSV
+          </button>
+          <button
+            onClick={() => { setForm(EMPTY_VENUE); setShowNew(true); setResult(null); }}
+            className="flex items-center gap-2 px-6 py-3 bg-[#120B05] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-[#D49E4A] transition-all shadow-xl"
+          >
+            <Plus size={14} /> Onboard Cafe
+          </button>
+        </div>
       </div>
 
       {/* ── KPI Summary ── */}
       {summary && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           {[
             { label: 'Active Venues',  value: summary.venueCount,  icon: Building2,   color: '#D49E4A' },
-            { label: 'Total Users',    value: summary.userCount,   icon: Users,       color: '#3b82f6' },
-            { label: 'Total Orders',   value: summary.totalOrders, icon: Coffee,      color: '#22c55e' },
-            { label: 'On Trial',       value: summary.trialCount,  icon: TrendingUp,  color: '#f59e0b' },
+            { label: 'Revenue (Month)', value: ETB(summary.revenueThisMonth), icon: TrendingUp, color: '#22c55e' },
+            { label: 'Total Revenue',  value: ETB(summary.totalRevenue), icon: TrendingUp, color: '#D49E4A' },
+            { label: 'Total Orders',   value: summary.totalOrders, icon: Coffee,      color: '#3b82f6' },
+            { label: 'On Trial',       value: summary.trialCount,  icon: Users,       color: '#f59e0b' },
           ].map(k => (
-            <div key={k.label} className="glass p-6 rounded-[28px] border border-black/5 shadow-lg">
+            <div key={k.label} className="glass p-6 rounded-[28px] border border-black/5 shadow-lg font-sans">
               <k.icon size={18} style={{ color: k.color }} className="mb-3" />
-              <div className="text-2xl font-serif font-black text-[#120B05]">{k.value}</div>
+              <div className="text-xl font-serif font-black text-[#120B05] truncate">{k.value}</div>
               <div className="text-[9px] font-black uppercase tracking-widest text-black/30 mt-1">{k.label}</div>
             </div>
           ))}
@@ -117,8 +154,19 @@ export default function SuperadminPanel() {
                 </div>
                 <div>
                   <h4 className="font-black text-[#120B05] tracking-tight">{v.name}</h4>
-                  <p className="text-[9px] uppercase font-black tracking-widest text-black/30">
-                    {v.slug} • {v.city} • {v._count.users} users
+                  <p className="text-[9px] uppercase font-black tracking-widest text-black/30 flex flex-wrap items-center gap-1.5">
+                    <span>{v.slug} • {v.city} • {v._count.users} users</span>
+                    {v.plan === 'TRIAL' && v.subscriptionExpiresAt && (
+                      <span className={`px-2 py-0.5 rounded-md font-bold text-[8px] ${
+                        new Date(v.subscriptionExpiresAt) > new Date() ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        TRIAL: {(() => {
+                          const diff = new Date(v.subscriptionExpiresAt) - new Date();
+                          const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                          return days > 0 ? `${days} days left` : 'Expired';
+                        })()}
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -157,6 +205,23 @@ export default function SuperadminPanel() {
                     className="p-2 bg-green-50 text-green-600 rounded-xl hover:bg-green-500 hover:text-white transition-all" title="Activate">
                     <ShieldCheck size={14} />
                   </button>
+                )}
+
+                {/* WhatsApp contact */}
+                {v.phone ? (
+                  <a
+                    href={`https://wa.me/${v.phone.replace(/[^\d]/g, '')}?text=${encodeURIComponent(`ሰላም ${v.name}! How is your café doing with Jan Systems?`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-green-50 text-green-600 rounded-xl hover:bg-green-500 hover:text-white transition-all flex items-center justify-center animate-fade-in"
+                    title="Send WhatsApp Message"
+                  >
+                    <MessageCircle size={14} />
+                  </a>
+                ) : (
+                  <span className="p-2 bg-black/5 text-black/10 rounded-xl cursor-not-allowed flex items-center justify-center" title="No phone number">
+                    <MessageCircle size={14} />
+                  </span>
                 )}
 
                 {/* Config */}

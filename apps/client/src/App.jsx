@@ -143,7 +143,19 @@ const App = () => {
     window.location.reload();
   };
 
-  if (loading) return <div className="h-screen flex items-center justify-center font-serif text-2xl animate-pulse">Initializing Jan Systems...</div>;
+  if (loading) return (
+    <div className="h-screen flex flex-col items-center justify-center gap-8 bg-[#FAF9F6]">
+      <div className="relative">
+        <img src="/logo.png" alt="Jan Systems" className="h-16 w-auto animate-pulse" />
+      </div>
+      <div className="flex gap-1.5">
+        {[0,1,2].map(i => (
+          <div key={i} className="w-2 h-2 bg-[#D49E4A] rounded-full animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />
+        ))}
+      </div>
+      <p className="text-[9px] font-black uppercase tracking-widest text-black/20">Loading Jan Systems...</p>
+    </div>
+  );
 
   // Paywall — shown when API returns 402
   if (paywallCode) return <PaywallView code={paywallCode} onLogout={handleLogout} />;
@@ -166,20 +178,18 @@ const App = () => {
       {/* ── FLOATING NAVIGATION (Luxury Glass) ── */}
       <div className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-lg z-50">
         <header className="glass-dark rounded-3xl p-2 flex items-center justify-between shadow-2xl">
-          <div className="px-4 py-2 rounded-2xl" style={{ backgroundColor: config?.primaryColor || '#D49E4A' }}>
-            <h1 className="text-white font-serif font-black text-xs tracking-tightest leading-none">
-              {config?.cafeName?.split(' ')[0]?.toUpperCase() || 'JAN'}
-            </h1>
+          <div className="px-3 py-2 rounded-2xl" style={{ backgroundColor: config?.primaryColor || '#D49E4A' }}>
+            <img src="/logo.png" alt="Jan Systems" className="h-5 w-auto brightness-0 invert" />
           </div>
 
           <nav className="flex gap-1 pr-2 items-center">
             {[
-              { id: 'customer', label: t('order') },
-              { id: 'waiter',   label: t('service') },
-              { id: 'kitchen',  label: t('kitchen') },
-              { id: 'admin',    label: t('admin') },
-              { id: 'owner',    label: t('owner') },
-            ].map((v) => (
+              { id: 'customer', label: t('order'),   roles: null },
+              { id: 'waiter',   label: t('service'), roles: ['WAITER', 'ADMIN', 'OWNER', 'SUPERADMIN'] },
+              { id: 'kitchen',  label: t('kitchen'),  roles: ['KITCHEN', 'ADMIN', 'OWNER', 'SUPERADMIN'] },
+              { id: 'admin',    label: t('admin'),   roles: ['ADMIN', 'OWNER', 'SUPERADMIN'] },
+              { id: 'owner',    label: t('owner'),   roles: ['OWNER', 'SUPERADMIN'] },
+            ].filter(v => !v.roles || !user?.role || v.roles.includes(user.role)).map((v) => (
               <button
                 key={v.id}
                 onClick={() => setView(v.id)}

@@ -3,7 +3,10 @@
 // Premium, non-alarming design — encourages upgrade rather than panicking the user.
 import React from 'react';
 import { useStore } from '../store/useStore';
-import { Clock, Zap, Crown, ArrowRight, Coffee } from 'lucide-react';
+import { Clock, Zap, Crown, ArrowRight, Coffee, MessageCircle } from 'lucide-react';
+
+const WA_LINK = `https://wa.me/251977717475?text=${encodeURIComponent('ሰላም! Jan Systems subscription ማደስ እፈልጋለሁ። Hello! I need to renew my Jan Systems subscription.')}`;
+const TG_LINK = 'https://t.me/jan_web_dev';
 
 const PLANS = [
   {
@@ -102,8 +105,11 @@ export default function PaywallView({ code, onLogout }) {
               ))}
             </ul>
 
-            <button
-              className={`w-full py-3.5 rounded-full font-black text-[10px] uppercase tracking-widest transition-all hover:-translate-y-0.5 ${
+            <a
+              href={plan.price === 'ተነጋጋሪ' ? TG_LINK : WA_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`w-full py-3.5 rounded-full font-black text-[10px] uppercase tracking-widest transition-all hover:-translate-y-0.5 text-center flex items-center justify-center gap-2 ${
                 plan.highlight
                   ? 'bg-white text-[#D49E4A] hover:bg-[#120B05] hover:text-white shadow-lg'
                   : plan.price === 'ተነጋጋሪ'
@@ -112,13 +118,13 @@ export default function PaywallView({ code, onLogout }) {
               }`}
             >
               {plan.price === 'ተነጋጋሪ' ? 'Contact Sales' : 'Upgrade Now'}
-            </button>
+            </a>
           </div>
         ))}
       </div>
 
       {/* Footer Actions */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-6 flex-wrap justify-center">
         <button
           onClick={onLogout}
           className="text-[10px] font-black uppercase tracking-widest text-black/30 hover:text-black/60 transition-all"
@@ -126,10 +132,20 @@ export default function PaywallView({ code, onLogout }) {
           Sign Out
         </button>
         <span className="text-black/10">|</span>
-        <a href="mailto:support@jansystems.com"
-          className="text-[10px] font-black uppercase tracking-widest text-[#D49E4A] hover:text-[#120B05] transition-all flex items-center gap-1"
+        <a
+          href={WA_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#25D366] hover:opacity-80 transition-all"
         >
-          Contact Support <ArrowRight size={10} />
+          <MessageCircle size={12} />
+          WhatsApp to Upgrade
+        </a>
+        <span className="text-black/10">|</span>
+        <a href={TG_LINK} target="_blank" rel="noopener noreferrer"
+          className="text-[10px] font-black uppercase tracking-widest text-[#D49E4A] hover:opacity-80 transition-all flex items-center gap-1"
+        >
+          Telegram: @jan_web_dev <ArrowRight size={10} />
         </a>
       </div>
 

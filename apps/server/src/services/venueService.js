@@ -166,11 +166,21 @@ export async function upgradeVenuePlan(venueId, plan) {
 
 // ─── Get Platform Revenue Summary (SuperAdmin Dashboard) ─────────────────────
 export async function getPlatformSummary() {
-  const [venueCount, userCount, orderStats, trialCount] = await Promise.all([
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const [venueCount, userCount, orderStats, trialCount, monthlyStats] = await Promise.all([
     prisma.venue.count(),
     prisma.user.count(),
     prisma.order.aggregate({ where: { status: 'DONE' }, _sum: { total: true }, _count: { id: true } }),
     prisma.venue.count({ where: { plan: 'TRIAL' } }),
+    prisma.order.aggregate({
+      where: {
+        status: 'DONE',
+        createdAt: { gte: startOfMonth }
+      },
+      _sum: { total: true }
+    })
   ]);
 
   const planBreakdown = await prisma.venue.groupBy({
@@ -183,6 +193,7 @@ export async function getPlatformSummary() {
     userCount,
     totalOrders:   orderStats._count.id,
     totalRevenue:  orderStats._sum.total || 0,
+    revenueThisMonth: monthlyStats._sum.total || 0,
     trialCount,
     planBreakdown: planBreakdown.map(p => ({ plan: p.plan, count: p._count.id })),
   };
