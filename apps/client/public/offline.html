@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jan Systems — Offline</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Georgia', serif;
+      background: #120B05;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 40px;
+      padding: 3rem 2rem;
+      max-width: 420px;
+      backdrop-filter: blur(20px);
+    }
+    .icon { font-size: 4rem; margin-bottom: 1.5rem; }
+    h1 { font-size: 2rem; font-weight: 900; margin-bottom: 0.5rem; letter-spacing: -0.03em; }
+    .sub { font-size: 0.65rem; color: #D49E4A; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 2rem; }
+    p { font-size: 0.85rem; opacity: 0.5; line-height: 1.7; margin-bottom: 2rem; }
+    .am { font-size: 1rem; opacity: 0.7; margin-bottom: 0.5rem; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(212,158,74,0.15);
+      border: 1px solid rgba(212,158,74,0.3);
+      color: #D49E4A;
+      padding: 0.6rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.12em;
+      margin-bottom: 2rem;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #ef4444;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .retry {
+      width: 100%; padding: 1rem;
+      background: #D49E4A; color: #120B05;
+      border: none; border-radius: 20px;
+      font-weight: 900; font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .retry:hover { opacity: 0.85; }
+    .note { font-size: 0.65rem; opacity: 0.25; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">☕</div>
+    <h1>Jan Systems</h1>
+    <p class="sub">Buna &amp; Co. POS — Offline Mode</p>
+
+    <div class="badge">
+      <div class="dot"></div>
+      No Internet Connection
+    </div>
+
+    <p class="am">ኢንተርኔት አልተገናኘም — ትዕዛዞቹ ተቀምጠዋል</p>
+    <p>
+      You are currently offline. All orders placed will be saved locally
+      and automatically uploaded to the server when connection is restored.
+    </p>
+
+    <button class="retry" onclick="window.location.reload()">
+      Try Reconnecting — እንደገና ሞክር
+    </button>
+
+    <p class="note">Jan Systems offline cache active • IndexedDB queue enabled</p>
+  </div>
+</body>
+</html>

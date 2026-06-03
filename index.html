@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jan Systems — Smarter Hospitality</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Role Switcher (Demo Only) -->
+    <nav class="demo-nav" id="role-switcher">
+        <div class="nav-container">
+            <span class="nav-label">Demo Role:</span>
+            <button class="nav-btn active" data-role="customer">Customer</button>
+            <button class="nav-btn" data-role="kitchen">Kitchen</button>
+            <button class="nav-btn" data-role="admin">Admin</button>
+        </div>
+    </nav>
+
+    <!-- App Container -->
+    <main id="app-root">
+        <!-- Content injected by app.js -->
+        <div class="loader-container">
+            <div class="loader"></div>
+            <p>Waking up the café...</p>
+        </div>
+    </main>
+
+    <!-- Notification System -->
+    <div id="notification-root"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

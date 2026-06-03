@@ -1,0 +1,246 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Venue {
+  id                    String      @id @default(cuid())
+  name                  String
+  slug                  String      @unique // For URL-based tenant identification
+  plan                  String      @default("TRIAL") // TRIAL, BASIC, PRO, ENTERPRISE
+  city                  String      @default("Addis Ababa")
+  phone                 String?
+  subscription          String      @default("TRIAL") // TRIAL, ACTIVE, SUSPENDED, CANCELLED
+  subscriptionExpiresAt DateTime?
+  stripeCustomerId      String?     @unique
+  users                 User[]
+  products              Product[]
+  stockItems            StockItem[]
+  orders                Order[]
+  shifts                Shift[]
+  tables                Table[]
+  configs               CafeConfig[]
+  settings              Settings[]
+  payments              Payment[]
+  inventoryLogs         InventoryLog[]
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  venueId     String
+  venue       Venue       @relation(fields: [venueId], references: [id])
+  name        String
+  price       Float
+  category    String
+  icon        String
+  image       String?
+  ingredients Ingredient[]
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  isDeleted   Boolean     @default(false)
+
+  @@unique([venueId, name])
+}
+
+model StockItem {
+  id          String       @id @default(cuid())
+  venueId     String
+  venue       Venue        @relation(fields: [venueId], references: [id])
+  name        String
+  amount      Float
+  unit        String
+  threshold   Float
+  costPerUnit Float        @default(0)
+  ingredients Ingredient[]
+  logs        InventoryLog[]
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([venueId, name])
+}
+
+model Ingredient {
+  id          String    @id @default(cuid())
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id])
+  stockItemId String
+  stockItem   StockItem @relation(fields: [stockItemId], references: [id])
+  quantity    Float     // Amount consumed per single product order
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  venueId       String
+  venue         Venue       @relation(fields: [venueId], references: [id])
+  customer      String?     // Optional for luxury service
+  tableId       String?
+  table         Table?      @relation(fields: [tableId], references: [id])
+  status        String      // "NEW", "PREPARING", "READY", "DONE", "CANCELLED", "VOIDED"
+  paymentMethod String      @default("CASH") // CASH, TELEBIRR, CBE_BIRR, ETHIOPAY, BANK_TRANSFER, OTHER
+  shiftId       String?
+  shift         Shift?      @relation(fields: [shiftId], references: [id])
+  payments      Payment[]
+  items         OrderItem[]
+  total         Float
+  voidedAt      DateTime?
+  voidReason    String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([status, createdAt])
+  @@index([shiftId])
+}
+
+model Shift {
+  id           String    @id @default(cuid())
+  venueId      String
+  venue        Venue     @relation(fields: [venueId], references: [id])
+  name         String    // e.g. "Morning Shift"
+  openedAt     DateTime  @default(now())
+  closedAt     DateTime?
+  openedBy     String    // Staff name or ID
+  closedBy     String?
+  status       String    @default("OPEN") // OPEN, CLOSED
+  systemCash   Float?
+  physicalCash Float?
+  cashVariance Float?
+  notes        String?
+  orders       Order[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model CafeConfig {
+  id               String   @id @default(cuid())
+  venueId          String   @unique
+  venue            Venue    @relation(fields: [venueId], references: [id])
+  cafeName         String
+  cafeNameAmharic  String?
+  logoUrl          String?
+  primaryColor     String   @default("#120B05")
+  secondaryColor   String   @default("#D49E4A")
+  currency         String   @default("ETB")
+  currencySymbol   String   @default("ብር")
+
+  // ── Payment Method Toggles ──
+  enableCash         Boolean  @default(true)
+  enableTelebirr     Boolean  @default(true)
+  enableCbeBirr      Boolean  @default(true)
+  enableEthiopay     Boolean  @default(false) // EthioPay interoperable gateway
+  enableBankTransfer Boolean  @default(false) // Direct bank transfer with reference capture
+
+  // ── Localization & Calendar ──
+  defaultLanguage  String   @default("EN")  // "EN" | "AM"
+  locale           String   @default("am-ET")
+  timezone         String   @default("Africa/Addis_Ababa")
+  enableEfy        Boolean  @default(true)  // Ethiopian Fiscal Year calendar in reports
+
+  // ── Receipt & ERCA Compliance (Phase 1) ──
+  receiptHeader    String
+  receiptFooter    String?
+  receiptLanguage  String   @default("BOTH") // EN | AM | BOTH
+  tin              String?  // Business TIN from ERCA registration
+  vatNumber        String?  // VAT registration number (Category B/C taxpayers)
+  fiscalDeviceId   String?  // ERCA-issued Fiscal Device Identifier
+  taxpayerCategory String   @default("B") // "B" | "C" per ERCA classification
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+}
+
+model User {
+  id           String   @id @default(cuid())
+  venueId      String?
+  venue        Venue?    @relation(fields: [venueId], references: [id])
+  email        String   @unique
+  password     String
+  name         String
+  role         String   @default("STAFF") // STAFF, ADMIN, OWNER, SUPERADMIN
+  refreshToken String?
+  schedules    Schedule[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Table {
+  id        String   @id @default(cuid())
+  venueId   String
+  venue     Venue    @relation(fields: [venueId], references: [id])
+  number    Int
+  zone      String   // "MAIN", "BALCONY"
+  seats     Int
+  status    String   @default("AVAILABLE") // "AVAILABLE", "OCCUPIED", "RESERVED", "CLOSED"
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([venueId, number])
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  venueId   String
+  venue     Venue    @relation(fields: [venueId], references: [id])
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  amount    Float
+  method    String   // "CASH", "TELEBIRR", "CBE_BIRR", "ETHIOPAY", "BANK_TRANSFER", "OTHER"
+  reference String?  // Bank transfer reference number or mobile money confirmation code
+  paidAt    DateTime @default(now())
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Schedule {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  startTime DateTime
+  endTime   DateTime
+  role      String
+  createdAt DateTime @default(now())
+}
+
+model InventoryLog {
+  id          String    @id @default(cuid())
+  venueId     String
+  venue       Venue     @relation(fields: [venueId], references: [id])
+  stockItemId String
+  stockItem   StockItem @relation(fields: [stockItemId], references: [id])
+  orderId     String?
+  change      Float     // Negative for consumption, positive for registration
+  reason      String?   // "Order Completed", "Manual Registration", etc.
+  timestamp   DateTime  @default(now())
+
+  @@index([timestamp])
+  @@index([stockItemId])
+  @@index([venueId])
+}
+
+model Settings {
+  id        String   @id @default(cuid())
+  venueId   String
+  venue     Venue    @relation(fields: [venueId], references: [id])
+  key       String
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@unique([venueId, key])
+}
