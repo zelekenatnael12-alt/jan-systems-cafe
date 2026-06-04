@@ -3,8 +3,24 @@ import express from 'express';
 import * as configService from '../services/configService.js';
 import { authenticate, authorize } from '../middleware/auth.js';
 import prisma from '../lib/prisma.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = express.Router();
+
+router.get('/debug-file', async (req, res) => {
+  try {
+    const filePath = path.join(__dirname, 'menu.routes.js');
+    const content = fs.readFileSync(filePath, 'utf8');
+    res.send(content);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 
 // GET /api/config — public (for loading venue theme/branding)
 // Supports: venueId (cuid), venue slug, or x-venue-id header
